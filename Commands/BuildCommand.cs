@@ -86,12 +86,6 @@ public class BuildCommand : ICommand
 						break;
 					}
 				}
-
-				// ************************************************
-				// ************************************************
-				// ************************************************
-				// ************************************************
-				break; // Temporary: Remove this line to enable full build process
 			}
 
 			// Check if there are still incomplete components

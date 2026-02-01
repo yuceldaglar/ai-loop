@@ -18,16 +18,16 @@ public class CreatePlanCommand : ICommand
 		Console.WriteLine("Creating a new plan...");
 		Console.WriteLine($"User prompt: {_userPrompt}");
 
-		var systemPromt = """ 
+		var systemPrompt = """ 
 			When creating an application follow a component based approach.
 			There will be some simple low level components.
 			And more advanced components can be composed by other components.
-			Components can interact with each other by events and other tecniques when necessary.
+			Components can interact with each other by events and other techniques when necessary.
 			Create a plan file 'plan.json' for the following user request '%p%'.
 			Plan should be in the following json format:
 			{
 				"application_description": ,
-				"architectural_desicions": [
+				"architectural_decisions": [
 					"decision 1",
 					"decision 2"
 				],
@@ -46,7 +46,11 @@ public class CreatePlanCommand : ICommand
 			}
 		""";
 
-		var result = await CopilotCliHelper.RunAsync(systemPromt.Replace("%p%", _userPrompt));
+		//var planPromptFilePath = "plan_prompt.txt";
+		var prompt = systemPrompt.Replace("%p%", _userPrompt);
+		//File.WriteAllText(planPromptFilePath, prompt);
+
+		var result = await CopilotCliHelper.RunAsync(prompt);
 
 		if (!result.Success)
 		{
