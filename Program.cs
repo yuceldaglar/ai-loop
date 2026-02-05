@@ -1,12 +1,16 @@
-﻿using InternLoop;
+using InternLoop;
+using InternLoop.Helpers;
 
 // See https://aka.ms/new-console-template for more information
 Console.WriteLine("Welcome to InternLoop!");
+Console.WriteLine($"Current agent: {AgentManager.Instance.CurrentAgent.Name}");
+Console.WriteLine();
 Console.WriteLine("Available commands:");
 Console.WriteLine("  create-plan - Create a new plan");
 Console.WriteLine("  update-plan - Update an existing plan");
 Console.WriteLine("  build - Build the project");
 Console.WriteLine("  develop - Start development mode");
+Console.WriteLine("  switch-agent [cursor|copilot] - Switch AI agent or show current");
 Console.WriteLine();
 
 string? commandName = args.Length > 0 ? args[0] : null;
