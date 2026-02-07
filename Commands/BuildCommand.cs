@@ -128,11 +128,11 @@ public class BuildCommand : ICommand
 
 		var prompt = systemPromt;
 
-		var result = await CopilotCliHelper.RunAsync(prompt);
+		var result = await AgentManager.Instance.CurrentAgent.RunAsync(prompt);
 
 		if (!result.Success)
 		{
-			Console.WriteLine(result.ErrorMessage ?? $"Copilot CLI exited with code {result.ExitCode}");
+			Console.WriteLine(result.ErrorMessage ?? $"{AgentManager.Instance.CurrentAgent.Name} exited with code {result.ExitCode}");
 			return false;
 		}
 
@@ -154,7 +154,7 @@ public class BuildCommand : ICommand
 		// Simulate building the component
 		Console.WriteLine($"Building component: {component.ComponentName}");
 
-		var systemPromt = """ 
+		var systemPrompt = """ 
 			We have following architectural design decisions:
 			%a%
 
@@ -165,18 +165,18 @@ public class BuildCommand : ICommand
 			Component Dependencies: %component_dependencies%
 		""";
 
-		var prompt = systemPromt
+		var prompt = systemPrompt
 			.Replace("%a%", string.Join("\r\n", plan.ArchitecturalDesicions))
 			.Replace("%component_name%", component.ComponentName)
 			.Replace("%component_description%", component.ComponentDescription)
 			.Replace("%component_detailed_design%", component.ComponentDetailedDesign)
 			.Replace("%component_dependencies%", component.Dependencies != null ? string.Join(", ", component.Dependencies) : "None");
 
-		var result = await CopilotCliHelper.RunAsync(prompt);
+		var result = await AgentManager.Instance.CurrentAgent.RunAsync(prompt);
 
 		if (!result.Success)
 		{
-			Console.WriteLine(result.ErrorMessage ?? $"Copilot CLI exited with code {result.ExitCode}");
+			Console.WriteLine(result.ErrorMessage ?? $"{AgentManager.Instance.CurrentAgent.Name} exited with code {result.ExitCode}");
 			return false;
 		}
 

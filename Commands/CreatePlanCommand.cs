@@ -23,7 +23,7 @@ public class CreatePlanCommand : ICommand
 			There will be some simple low level components.
 			And more advanced components can be composed by other components.
 			Components can interact with each other by events and other techniques when necessary.
-			Create a plan file 'plan.json' for the following user request '%p%'.
+			Create a plan file '.ai/plan.json' for the following user request '%p%'.
 			Plan should be in the following json format:
 			{
 				"application_description": ,
@@ -50,11 +50,11 @@ public class CreatePlanCommand : ICommand
 		var prompt = systemPrompt.Replace("%p%", _userPrompt);
 		//File.WriteAllText(planPromptFilePath, prompt);
 
-		var result = await CopilotCliHelper.RunAsync(prompt);
+		var result = await AgentManager.Instance.CurrentAgent.RunAsync(prompt);
 
 		if (!result.Success)
 		{
-			Console.WriteLine(result.ErrorMessage ?? $"Copilot CLI exited with code {result.ExitCode}");
+			Console.WriteLine(result.ErrorMessage ?? $"{AgentManager.Instance.CurrentAgent.Name} exited with code {result.ExitCode}");
 		}
 
 		if (!string.IsNullOrWhiteSpace(result.Output))

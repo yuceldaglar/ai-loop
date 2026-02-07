@@ -14,7 +14,7 @@ public class CommandParser
             "create-plan" => new CreatePlanCommand(arguments),
             "update-plan" => new UpdatePlanCommand(),
             "build" => new BuildCommand(),
-            "develop" => new DevelopCommand(),
+            "develop" => new DevelopCommand(arguments),
             "switch-agent" => new Commands.SwitchAgentCommand(arguments),
             "test-deserialization" => new Commands.TestDeserializationCommand(),
             "test-cursor-cli" => new Commands.TestCursorCliCommand(),
