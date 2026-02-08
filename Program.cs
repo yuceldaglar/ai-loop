@@ -7,7 +7,6 @@ Console.WriteLine($"Current agent: {AgentManager.Instance.CurrentAgent.Name}");
 Console.WriteLine();
 Console.WriteLine("Available commands:");
 Console.WriteLine("  create-plan - Create a new plan");
-Console.WriteLine("  update-plan - Update an existing plan");
 Console.WriteLine("  build - Build the project");
 Console.WriteLine("  develop - Development a feature or a fix. Every change after build.");
 Console.WriteLine("  switch-agent [cursor|copilot] - Switch AI agent or show current");

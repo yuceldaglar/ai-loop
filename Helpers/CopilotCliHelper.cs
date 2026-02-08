@@ -5,15 +5,16 @@ namespace InternLoop.Helpers;
 
 public class CopilotCliHelper
 {
-	public static async Task<CliResult> RunAsync(string prompt, string? model = null)
+	public static async Task<CliResult> RunAsync(string prompt, string? model = null, string? workingDirectory = null)
 	{
 		try
 		{
 			var modelToUse = model ?? Commands.CommandHelper.MODEL;
+			var cwd = workingDirectory ?? Environment.CurrentDirectory;
 
 			await using var client = new CopilotClient(new CopilotClientOptions
 			{
-				Cwd = Environment.CurrentDirectory
+				Cwd = cwd
 			});
 			await client.StartAsync();
 

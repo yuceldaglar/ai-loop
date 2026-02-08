@@ -12,7 +12,6 @@ public class CommandParser
         return commandName.ToLowerInvariant() switch
         {
             "create-plan" => new CreatePlanCommand(arguments),
-            "update-plan" => new UpdatePlanCommand(),
             "build" => new BuildCommand(),
             "develop" => new DevelopCommand(arguments),
             "switch-agent" => new Commands.SwitchAgentCommand(arguments),

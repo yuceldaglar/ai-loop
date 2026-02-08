@@ -7,8 +7,8 @@ public class CopilotAgentHelper : IAgentHelper
 {
     public string Name => "Copilot";
 
-    public Task<CliResult> RunAsync(string prompt, string? model = null)
+    public Task<CliResult> RunAsync(string prompt, string? model = null, string? workingDirectory = null)
     {
-        return CopilotCliHelper.RunAsync(prompt, model);
+        return CopilotCliHelper.RunAsync(prompt, model, workingDirectory);
     }
 }

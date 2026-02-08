@@ -23,7 +23,7 @@ public class CreatePlanCommand : ICommand
 			There will be some simple low level components.
 			And more advanced components can be composed by other components.
 			Components can interact with each other by events and other techniques when necessary.
-			Create a plan file '.ai/plan.json' for the following user request '%p%'.
+			Take current directory as root, do all operatıons under it. Create '.ai' directory if not exists. Create a plan file '.ai/plan.json' for the following user request '%p%'.
 			Plan should be in the following json format:
 			{
 				"application_description": ,
@@ -50,7 +50,7 @@ public class CreatePlanCommand : ICommand
 		var prompt = systemPrompt.Replace("%p%", _userPrompt);
 		//File.WriteAllText(planPromptFilePath, prompt);
 
-		var result = await AgentManager.Instance.CurrentAgent.RunAsync(prompt);
+		var result = await AgentManager.Instance.CurrentAgent.RunAsync(prompt, workingDirectory: Environment.CurrentDirectory);
 
 		if (!result.Success)
 		{

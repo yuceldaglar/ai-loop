@@ -11,7 +11,7 @@ public class BuildCommand : ICommand
 	{
 		Console.WriteLine("Building the project...");
 
-		const string planFilePath = "plan.json";
+		const string planFilePath = ".ai/plan.json";
 
 		if (!File.Exists(planFilePath))
 		{
@@ -68,10 +68,14 @@ public class BuildCommand : ICommand
 
 					if (canBuild)
 					{
-						component.DevelopmentStatus = DevelopmentStatus.Completed;
 						Console.WriteLine($"Built component: {component.ComponentName}");
 
 						componentsBuilt = await BuildComponent(plan, component);
+
+						if (componentsBuilt)
+						{
+							component.DevelopmentStatus = DevelopmentStatus.Completed;
+						}
 
 						// Save plan.json after each component is built
 						var updatedJson = JsonSerializer.Serialize(plan, new JsonSerializerOptions
@@ -115,81 +119,39 @@ public class BuildCommand : ICommand
 
 	private async Task<bool> BuildEmptyProject(PlanModel plan)
 	{
-		// Simulate building the component
 		Console.WriteLine($"Creating empty project!");
 
-		var systemPromt = $"""
+		var systemPrompt = $"""
 			We have following architectural design decisions:
 			{string.Join("\r\n", plan.ArchitecturalDesicions)}
 
 			If there is no project create an empty project for the following application description:
 			{plan.ApplicationDescription}
-		""";
+			{BuildVerificationHelper.BuildVerificationPromptSuffix}
+			""";
 
-		var prompt = systemPromt;
-
-		var result = await AgentManager.Instance.CurrentAgent.RunAsync(prompt);
-
-		if (!result.Success)
-		{
-			Console.WriteLine(result.ErrorMessage ?? $"{AgentManager.Instance.CurrentAgent.Name} exited with code {result.ExitCode}");
-			return false;
-		}
-
-		if (!string.IsNullOrWhiteSpace(result.Output))
-		{
-			Console.WriteLine(result.Output);
-		}
-
-		if (!string.IsNullOrWhiteSpace(result.ErrorOutput))
-		{
-			Console.Error.WriteLine(result.ErrorOutput);
-		}
-
-		return true;
+		var (success, _) = await BuildVerificationHelper.ExecuteWithBuildVerificationAsync(systemPrompt, Environment.CurrentDirectory);
+		return success;
 	}
 
 	private async Task<bool> BuildComponent(PlanModel plan, ComponentModel component)
 	{
-		// Simulate building the component
 		Console.WriteLine($"Building component: {component.ComponentName}");
 
-		var systemPrompt = """ 
+		var systemPrompt = $"""
+			Take current directory as root, do all operatıons under it.
 			We have following architectural design decisions:
-			%a%
+			{string.Join("\r\n", plan.ArchitecturalDesicions)}
 
 			Based on these decisions, please help to build the component:
-			Component Name: %component_name%
-			Component Description: %component_description%
-			Component Detailed Design: %component_detailed_design%
-			Component Dependencies: %component_dependencies%
-		""";
+			Component Name: {component.ComponentName}
+			Component Description: {component.ComponentDescription}
+			Component Detailed Design: {component.ComponentDetailedDesign}
+			Component Dependencies: {(component.Dependencies != null ? string.Join(", ", component.Dependencies) : "None")}
+			{BuildVerificationHelper.BuildVerificationPromptSuffix}
+			""";
 
-		var prompt = systemPrompt
-			.Replace("%a%", string.Join("\r\n", plan.ArchitecturalDesicions))
-			.Replace("%component_name%", component.ComponentName)
-			.Replace("%component_description%", component.ComponentDescription)
-			.Replace("%component_detailed_design%", component.ComponentDetailedDesign)
-			.Replace("%component_dependencies%", component.Dependencies != null ? string.Join(", ", component.Dependencies) : "None");
-
-		var result = await AgentManager.Instance.CurrentAgent.RunAsync(prompt);
-
-		if (!result.Success)
-		{
-			Console.WriteLine(result.ErrorMessage ?? $"{AgentManager.Instance.CurrentAgent.Name} exited with code {result.ExitCode}");
-			return false;
-		}
-
-		if (!string.IsNullOrWhiteSpace(result.Output))
-		{
-			Console.WriteLine(result.Output);
-		}
-
-		if (!string.IsNullOrWhiteSpace(result.ErrorOutput))
-		{
-			Console.Error.WriteLine(result.ErrorOutput);
-		}
-
-		return true;
+		var (success, _) = await BuildVerificationHelper.ExecuteWithBuildVerificationAsync(systemPrompt, Environment.CurrentDirectory);
+		return success;
 	}
 }

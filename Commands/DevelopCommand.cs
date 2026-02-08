@@ -53,7 +53,7 @@ public class DevelopCommand : ICommand
 
 		var prompt = systemPrompt.Replace("%p%", _userPrompt);
 
-		var result = await AgentManager.Instance.CurrentAgent.RunAsync(prompt);
+		var result = await AgentManager.Instance.CurrentAgent.RunAsync(prompt, workingDirectory: Environment.CurrentDirectory);
 
 		if (!result.Success)
 		{
@@ -145,12 +145,15 @@ public class DevelopCommand : ICommand
 
 					if (canBuild)
 					{
-						component.DevelopmentStatus = DevelopmentStatus.Completed;
 						Console.WriteLine($"Building component: {component.ComponentName}");
 
 						componentsBuilt = await BuildComponent(plan, component);
 
-						Console.WriteLine($"Component built! {component.ComponentName}");
+						if (componentsBuilt)
+						{
+							component.DevelopmentStatus = DevelopmentStatus.Completed;
+							Console.WriteLine($"Component built! {component.ComponentName}");
+						}
 
 						// Save plan.json after each component is built
 						var updatedJson = JsonSerializer.Serialize(changePlan, new JsonSerializerOptions
@@ -168,7 +171,7 @@ public class DevelopCommand : ICommand
 			}
 
 			// Check if there are still incomplete components
-			var incompleteComponents = plan.Components.Where(c => c.DevelopmentStatus != DevelopmentStatus.Completed).ToList();
+			var incompleteComponents = changePlan.Components.Where(c => c.DevelopmentStatus != DevelopmentStatus.Completed).ToList();
 			if (incompleteComponents.Any())
 			{
 				Console.WriteLine("\nWarning: Some components could not be built due to unmet dependencies:");
@@ -194,10 +197,9 @@ public class DevelopCommand : ICommand
 
 	private async Task<bool> BuildComponent(PlanModel plan, ComponentModel component)
 	{
-		// Simulate building the component
 		Console.WriteLine($"Building component: {component.ComponentName}");
 
-		var existingComponent = plan.Components.Exists(component => component.ComponentName == component.ComponentName);
+		var existingComponent = plan.Components.Exists(c => c.ComponentName == component.ComponentName);
 		var componentPrompt = existingComponent
 			? $"We are updating the component '{component.ComponentName}' with the following description and design:\nDescription: {component.ComponentDescription}\nDetailed Design: {component.ComponentDetailedDesign}\nDependencies: {(component.Dependencies != null ? string.Join(", ", component.Dependencies) : "None")}"
 			: $"We are building a new component '{component.ComponentName}' with the following description and design:\nDescription: {component.ComponentDescription}\nDetailed Design: {component.ComponentDetailedDesign}\nDependencies: {(component.Dependencies != null ? string.Join(", ", component.Dependencies) : "None")}";
@@ -209,27 +211,10 @@ public class DevelopCommand : ICommand
 			{componentPrompt}
 
 			Then update the '.ai/plan.json' file with the new component information and mark it as completed.
-		""";
+			{BuildVerificationHelper.BuildVerificationPromptSuffix}
+			""";
 
-		var prompt = systemPrompt;
-		var result = await AgentManager.Instance.CurrentAgent.RunAsync(prompt);
-
-		if (!result.Success)
-		{
-			Console.WriteLine(result.ErrorMessage ?? $"{AgentManager.Instance.CurrentAgent.Name} exited with code {result.ExitCode}");
-			return false;
-		}
-
-		if (!string.IsNullOrWhiteSpace(result.Output))
-		{
-			Console.WriteLine(result.Output);
-		}
-
-		if (!string.IsNullOrWhiteSpace(result.ErrorOutput))
-		{
-			Console.Error.WriteLine(result.ErrorOutput);
-		}
-
-		return true;
+		var (success, _) = await BuildVerificationHelper.ExecuteWithBuildVerificationAsync(systemPrompt, Environment.CurrentDirectory);
+		return success;
 	}
 }

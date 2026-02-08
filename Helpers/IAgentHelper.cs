@@ -15,6 +15,7 @@ public interface IAgentHelper
     /// </summary>
     /// <param name="prompt">The prompt to send to the agent</param>
     /// <param name="model">Optional model to use</param>
+    /// <param name="workingDirectory">Working directory for the agent (project root). Uses current directory if null.</param>
     /// <returns>A CliResult containing the response or error information</returns>
-    Task<CliResult> RunAsync(string prompt, string? model = null);
+    Task<CliResult> RunAsync(string prompt, string? model = null, string? workingDirectory = null);
 }
