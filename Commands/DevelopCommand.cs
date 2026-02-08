@@ -145,14 +145,12 @@ public class DevelopCommand : ICommand
 
 					if (canBuild)
 					{
-						Console.WriteLine($"Building component: {component.ComponentName}");
-
 						componentsBuilt = await BuildComponent(plan, component);
 
 						if (componentsBuilt)
 						{
 							component.DevelopmentStatus = DevelopmentStatus.Completed;
-							Console.WriteLine($"Component built! {component.ComponentName}");
+							Console.WriteLine($"Completed!");
 						}
 
 						// Save plan.json after each component is built

@@ -68,8 +68,6 @@ public class BuildCommand : ICommand
 
 					if (canBuild)
 					{
-						Console.WriteLine($"Built component: {component.ComponentName}");
-
 						componentsBuilt = await BuildComponent(plan, component);
 
 						if (componentsBuilt)
@@ -152,6 +150,9 @@ public class BuildCommand : ICommand
 			""";
 
 		var (success, _) = await BuildVerificationHelper.ExecuteWithBuildVerificationAsync(systemPrompt, Environment.CurrentDirectory);
+		
+		Console.WriteLine($"Completed!");
+
 		return success;
 	}
 }
