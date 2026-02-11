@@ -18,8 +18,9 @@ The tool uses **Cursor** or **GitHub Copilot** as the underlying AI agent, so yo
 
 ## Why This Is Useful
 
+- **Mental model alignment** – By AI generating a clear architecture and component breakdown, you can understand the structure of your application without reading hundreds of code files.
 - **Structured AI development** – Instead of one-shot prompts, InternLoop breaks work into an architecture, components, and dependencies, so the AI stays focused and consistent.
-- ** Component-based architecture** – Enforces a modular design: low-level components first, then higher-level ones composed from them.
+- **Component-based architecture** – Enforces a modular design: low-level components first, then higher-level ones composed from them.
 - **Agent flexibility** – Use Cursor or Copilot from the same workflow; switch agents without changing your process.
 - **Reproducible builds** – Plans are versionable and can be reused or shared across machines.
 - **Change management** – `develop` keeps your architecture in sync by creating change plans and merging updates into the main plan.
