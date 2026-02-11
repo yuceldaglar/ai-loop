@@ -15,8 +15,6 @@ public class CommandParser
             "build" => new BuildCommand(),
             "develop" => new DevelopCommand(arguments),
             "switch-agent" => new Commands.SwitchAgentCommand(arguments),
-            "test-deserialization" => new Commands.TestDeserializationCommand(),
-            "test-cursor-cli" => new Commands.TestCursorCliCommand(),
             _ => throw new ArgumentException($"Unknown command: {commandName}")
         };
     }
